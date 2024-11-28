@@ -6,17 +6,16 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:48:36 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 15:51:55 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 21:40:18 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-
 t_stash	*ft_lstnew(void *content)
 {
 	t_stash	*list;
-	
+
 	list = malloc(sizeof(t_stash));
 	if (!list)
 		return (NULL);
@@ -37,7 +36,7 @@ t_stash	*ft_lstlast(t_stash *lst)
 void	ft_lstadd_back(t_stash **lst, t_stash *new)
 {
 	t_stash	*last;
-	
+
 	if (!new)
 		return ;
 	if (!*lst)
@@ -64,16 +63,16 @@ void	ft_lstclear(t_stash **lst)
 			(*lst)->content = NULL;
 		}
 		free(*lst);
-	
 		*lst = temp;
 	}
 	lst = NULL;
 }
+
 int	ft_count_lst(t_stash *lst)
 {
 	int	i;
 	int	j;
-	
+
 	i = 0;
 	while (lst)
 	{
@@ -86,5 +85,4 @@ int	ft_count_lst(t_stash *lst)
 		lst = lst->next;
 	}
 	return (i);
-
 }

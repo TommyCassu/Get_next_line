@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 21:30:47 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 21:38:18 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,10 @@ int	ft_verif_newline(t_stash *stash)
 	return (0);
 }
 
-// Lis le fichier et alloue une memoire en fonction de la size choisi
-// L'ajoute a la fin de la lst
 void	ft_read(int fd, t_stash **stash)
 {
 	char	*buffer;
-	t_stash *node;
+	t_stash	*node;
 	ssize_t	b_read;
 
 	while (!ft_verif_newline(*stash))
@@ -64,10 +62,9 @@ char	*ft_create_line(t_stash *stash)
 	char	*line;
 	int		i;
 	int		j;
-	
+
 	i = 0;
 	j = 0;
-
 	line = malloc(sizeof(char) * (ft_count_lst(stash) + 2));
 	while (stash)
 	{
@@ -92,24 +89,24 @@ t_stash	**ft_stash(t_stash **stash)
 {
 	t_stash	*tempnode;
 	char	*t;
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 
 	i = 0;
 	j = 0;
 	t = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!t)
 		return (NULL);
-	tempnode =  ft_lstlast((*stash));
-	if (!tempnode || !tempnode->content) 
+	tempnode = ft_lstlast((*stash));
+	if (!tempnode || !tempnode->content)
 	{
 		free(t);
-    	return NULL;
+		return (NULL);
 	}
 	while (tempnode->content[i] != '\n' && tempnode->content[i])
 		i++;
 	while (tempnode->content[i] && tempnode->content[++i])
-		t[j++] = tempnode->content[i];		
+		t[j++] = tempnode->content[i];
 	t[j] = '\0';
 	ft_lstclear(stash);
 	tempnode = ft_lstnew(t);
@@ -119,22 +116,20 @@ t_stash	**ft_stash(t_stash **stash)
 
 char	*get_next_line(int fd)
 {
-	static	t_stash	*stash = NULL;
-	char	*buffer;
-	
+	static t_stash	*stash = NULL;
+	char			*buffer;
+
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
 		return (NULL);
 	ft_read(fd, &stash);
-
 	buffer = ft_create_line(stash);
-	if ((buffer == NULL || buffer[0] == '\0') && !ft_verif_newline(stash)) { 
-        ft_lstclear(&stash);
+	if ((buffer == NULL || buffer[0] == '\0') && !ft_verif_newline(stash))
+	{
+		ft_lstclear(&stash);
 		free(buffer);
 		buffer = NULL;
-        return NULL; // Retournez NULL
-    }
-	// Vidage de la liste
+		return (NULL);
+	}
 	ft_stash(&stash);
-
 	return (buffer);
 }
