@@ -6,31 +6,13 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:48:36 by toto              #+#    #+#             */
-/*   Updated: 2024/11/26 23:45:19 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 13:42:18 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	ft_verif_newline(t_stash *stash)
-{
-	int	i;
 
-	i = 0;
-	if (!stash)
-		return (0);
-	while (stash)
-	{
-		while (i < BUFFER_SIZE)
-		{
-			if (stash->content[i] == '\n')
-				return (1);
-			i++;
-		}
-		stash = stash->next;
-	}
-	return (0);
-}
 t_stash	*ft_lstnew(void *content)
 {
 	t_stash	*list;
