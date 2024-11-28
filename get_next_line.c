@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 21:26:06 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 21:30:47 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,44 +128,13 @@ char	*get_next_line(int fd)
 
 	buffer = ft_create_line(stash);
 	if ((buffer == NULL || buffer[0] == '\0') && !ft_verif_newline(stash)) { 
-        free(buffer); // Libérez le stash
+        ft_lstclear(&stash);
+		free(buffer);
+		buffer = NULL;
         return NULL; // Retournez NULL
     }
 	// Vidage de la liste
 	ft_stash(&stash);
 
 	return (buffer);
-}
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h> // Assurez-vous d'inclure votre fichier d'en-tête
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include "get_next_line.h" // Assurez-vous d'inclure votre fichier d'en-tête
-
-int main() {
-    int fd;
-    char *line;
-
-    // Ouvrir le fichier contenant un seul caractère
-    fd = open("text.txt", O_RDONLY);
-    if (fd < 0) {
-        perror("Error opening file");
-        return 1;
-    }
-
-    // Lire les lignes jusqu'à la fin du fichier
-    while (1) {
-        line = get_next_line(fd);
-        if (line == NULL) {
-            break; // Fin du fichier ou erreur
-        }
-        printf("Read line: %s\n", line);
-        free(line); // Libérer la mémoire allouée pour la ligne
-    }
-
-    close(fd); // Fermer le descripteur de fichier
-    return 0;
 }
