@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:43:48 by toto              #+#    #+#             */
-/*   Updated: 2024/11/26 23:26:06 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 14:59:19 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,6 @@ typedef	struct s_stash
 void	ft_lstadd_back(t_stash **lst, t_stash *new);
 t_stash	*ft_lstnew(void *content);
 t_stash	*ft_lstlast(t_stash *lst);
-
+void	ft_lstclear(t_stash **lst);
 
 #endif

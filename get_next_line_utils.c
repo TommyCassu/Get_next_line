@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:48:36 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 13:42:18 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 15:16:12 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,3 +49,23 @@ void	ft_lstadd_back(t_stash **lst, t_stash *new)
 	last->next = new;
 }
 
+void	ft_lstclear(t_stash **lst)
+{
+	t_stash	*temp;
+
+	if (!lst)
+		return ;
+	while (*lst)
+	{
+		temp = (*lst)->next;
+		if ((*lst)->content)
+		{
+			free((*lst)->content);
+			(*lst)->content = NULL;
+		}
+		free(*lst);
+	
+		*lst = temp;
+	}
+	lst = NULL;
+}

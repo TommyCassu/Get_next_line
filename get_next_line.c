@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 14:39:18 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 15:20:24 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,34 @@ char	*ft_create_line(t_stash *stash)
 	return (line);
 }
 
+t_stash	**ft_stash(t_stash **stash)
+{
+	t_stash	*tempnode;
+	char	*t;
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	t = malloc(sizeof(char) * BUFFER_SIZE);
+	tempnode =  ft_lstlast((*stash));
+	while (tempnode->content[i] != '\n' && tempnode->content[i] != '\0')
+		i++;
+	i++;
+	while (tempnode->content[i] != '\0')
+	{
+		t[j] = tempnode->content[i];
+		i++;
+		j++;
+	}
+	t[j] = '\0';
+	ft_lstclear(stash);
+	tempnode = ft_lstnew(t);
+	printf("Nouvelle stash: |%s|\n", tempnode->content);
+	ft_lstadd_back(stash, tempnode);
+	return (stash);
+}
+
 char	*get_next_line(int fd)
 {
 	static	t_stash	*stash = NULL;
@@ -99,18 +127,11 @@ char	*get_next_line(int fd)
 	ft_read(fd, &stash);
 	
     // Afficher le contenu de stash pour vérification
-     printf("Contenu de stash après ft_read:\n");
-    t_stash *current = stash;
-    while (current)
-    {
-        printf("Node content: %s|\n", current->content);
-        current = current->next;
-    }
     // creation de la variable line
 	buffer = ft_create_line(stash);
 	
 	// Vidage de la liste
-	stash = ft_stash();
+	ft_stash(&stash);
 
 	return (buffer);
 }
@@ -127,5 +148,9 @@ int	main()
 		return (1);
 	}
 	result = get_next_line(fd);
-	printf("%s", result);
+	printf("Ligne : %s", result);
+	free(result);
+	result = get_next_line(fd);
+	printf("Ligne : %s", result);
+	free(result);
 }
