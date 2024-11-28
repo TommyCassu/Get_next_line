@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 15:20:24 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 21:26:06 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@ int	ft_verif_newline(t_stash *stash)
 	int	i;
 
 	i = 0;
-	if (!stash)
+	if (stash == NULL)
 		return (0);
 	while (stash)
 	{
 		i = 0;
-		while (i < BUFFER_SIZE - 1)
+		while (i < BUFFER_SIZE && stash->content[i] != '\0')
 		{
 			if (stash->content[i] == '\n')
 				return (1);
@@ -36,30 +36,27 @@ int	ft_verif_newline(t_stash *stash)
 
 // Lis le fichier et alloue une memoire en fonction de la size choisi
 // L'ajoute a la fin de la lst
-t_stash	**ft_read(int fd, t_stash **stash)
+void	ft_read(int fd, t_stash **stash)
 {
 	char	*buffer;
 	t_stash *node;
 	ssize_t	b_read;
-	int i;
 
-	i = 0;
 	while (!ft_verif_newline(*stash))
 	{
-		buffer = malloc(sizeof(char) * (BUFFER_SIZE));
+		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (!buffer)
-			return (NULL);
-		b_read = read(fd, buffer, BUFFER_SIZE - 1);
-		if (b_read == -1)
+			return ;
+		b_read = read(fd, buffer, BUFFER_SIZE);
+		if (b_read <= 0)
 		{
-			free (buffer);
-			return (NULL);
+			free(buffer);
+			return ;
 		}
 		buffer[b_read] = '\0';
 		node = ft_lstnew(buffer);
 		ft_lstadd_back(stash, node);
 	}
-	return (stash);
 }
 
 char	*ft_create_line(t_stash *stash)
@@ -70,24 +67,24 @@ char	*ft_create_line(t_stash *stash)
 	
 	i = 0;
 	j = 0;
-	line = malloc(sizeof(char) * 100);
+
+	line = malloc(sizeof(char) * (ft_count_lst(stash) + 2));
 	while (stash)
 	{
 		i = 0;
-		while (i < BUFFER_SIZE - 1)
+		while (stash->content[i])
 		{
 			if (stash->content[i] == '\n')
 			{
 				line[j] = '\n';
-				line[j+1] = '\0';
+				line[++j] = '\0';
 				return (line);
 			}
-			line[j] = stash->content[i];
-			j++;
-			i++;
+			line[j++] = stash->content[i++];
 		}
 		stash = stash->next;
 	}
+	line[j] = '\0';
 	return (line);
 }
 
@@ -100,21 +97,22 @@ t_stash	**ft_stash(t_stash **stash)
 
 	i = 0;
 	j = 0;
-	t = malloc(sizeof(char) * BUFFER_SIZE);
+	t = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!t)
+		return (NULL);
 	tempnode =  ft_lstlast((*stash));
-	while (tempnode->content[i] != '\n' && tempnode->content[i] != '\0')
-		i++;
-	i++;
-	while (tempnode->content[i] != '\0')
+	if (!tempnode || !tempnode->content) 
 	{
-		t[j] = tempnode->content[i];
-		i++;
-		j++;
+		free(t);
+    	return NULL;
 	}
+	while (tempnode->content[i] != '\n' && tempnode->content[i])
+		i++;
+	while (tempnode->content[i] && tempnode->content[++i])
+		t[j++] = tempnode->content[i];		
 	t[j] = '\0';
 	ft_lstclear(stash);
 	tempnode = ft_lstnew(t);
-	printf("Nouvelle stash: |%s|\n", tempnode->content);
 	ft_lstadd_back(stash, tempnode);
 	return (stash);
 }
@@ -124,33 +122,50 @@ char	*get_next_line(int fd)
 	static	t_stash	*stash = NULL;
 	char	*buffer;
 	
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
+		return (NULL);
 	ft_read(fd, &stash);
-	
-    // Afficher le contenu de stash pour vérification
-    // creation de la variable line
+
 	buffer = ft_create_line(stash);
-	
+	if ((buffer == NULL || buffer[0] == '\0') && !ft_verif_newline(stash)) { 
+        free(buffer); // Libérez le stash
+        return NULL; // Retournez NULL
+    }
 	// Vidage de la liste
 	ft_stash(&stash);
 
 	return (buffer);
 }
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h> // Assurez-vous d'inclure votre fichier d'en-tête
 
-int	main()
-{
-	int	fd;
-	char	*result;
-	
-	fd = open("text.txt", O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Errour lors de la lecture du fichier");
-		return (1);
-	}
-	result = get_next_line(fd);
-	printf("Ligne : %s", result);
-	free(result);
-	result = get_next_line(fd);
-	printf("Ligne : %s", result);
-	free(result);
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include "get_next_line.h" // Assurez-vous d'inclure votre fichier d'en-tête
+
+int main() {
+    int fd;
+    char *line;
+
+    // Ouvrir le fichier contenant un seul caractère
+    fd = open("text.txt", O_RDONLY);
+    if (fd < 0) {
+        perror("Error opening file");
+        return 1;
+    }
+
+    // Lire les lignes jusqu'à la fin du fichier
+    while (1) {
+        line = get_next_line(fd);
+        if (line == NULL) {
+            break; // Fin du fichier ou erreur
+        }
+        printf("Read line: %s\n", line);
+        free(line); // Libérer la mémoire allouée pour la ligne
+    }
+
+    close(fd); // Fermer le descripteur de fichier
+    return 0;
 }

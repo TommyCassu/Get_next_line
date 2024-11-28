@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:48:36 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 15:16:12 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/28 15:51:55 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,23 @@ void	ft_lstclear(t_stash **lst)
 		*lst = temp;
 	}
 	lst = NULL;
+}
+int	ft_count_lst(t_stash *lst)
+{
+	int	i;
+	int	j;
+	
+	i = 0;
+	while (lst)
+	{
+		j = 0;
+		while (lst->content[j] != '\0' && lst->content[j] != '\n')
+		{
+			i++;
+			j++;
+		}
+		lst = lst->next;
+	}
+	return (i);
+
 }
