@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 21:38:18 by toto             ###   ########.fr       */
+/*   Updated: 2024/11/29 13:21:18 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,28 +88,28 @@ char	*ft_create_line(t_stash *stash)
 t_stash	**ft_stash(t_stash **stash)
 {
 	t_stash	*tempnode;
-	char	*t;
+	char	*tmpstash;
 	int		i;
 	int		j;
 
 	i = 0;
 	j = 0;
-	t = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!t)
+	tmpstash = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!tmpstash)
 		return (NULL);
 	tempnode = ft_lstlast((*stash));
 	if (!tempnode || !tempnode->content)
 	{
-		free(t);
+		free(tmpstash);
 		return (NULL);
 	}
 	while (tempnode->content[i] != '\n' && tempnode->content[i])
 		i++;
 	while (tempnode->content[i] && tempnode->content[++i])
-		t[j++] = tempnode->content[i];
-	t[j] = '\0';
+		tmpstash[j++] = tempnode->content[i];
+	tmpstash[j] = '\0';
 	ft_lstclear(stash);
-	tempnode = ft_lstnew(t);
+	tempnode = ft_lstnew(tmpstash);
 	ft_lstadd_back(stash, tempnode);
 	return (stash);
 }
