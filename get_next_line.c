@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/11/29 13:21:18 by toto             ###   ########.fr       */
+/*   Updated: 2024/12/03 00:31:20 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,12 @@ int	ft_verif_newline(t_stash *stash)
 	return (0);
 }
 
+/*	Read the file fd a write on tje stash lst */
 void	ft_read(int fd, t_stash **stash)
 {
 	char	*buffer;
 	t_stash	*node;
-	ssize_t	b_read;
+	int		b_read;
 
 	while (!ft_verif_newline(*stash))
 	{
@@ -46,17 +47,20 @@ void	ft_read(int fd, t_stash **stash)
 		if (!buffer)
 			return ;
 		b_read = read(fd, buffer, BUFFER_SIZE);
-		if (b_read <= 0)
+		if (!b_read)
 		{
 			free(buffer);
 			return ;
 		}
 		buffer[b_read] = '\0';
 		node = ft_lstnew(buffer);
+		if (!node)
+			return ;
 		ft_lstadd_back(stash, node);
 	}
 }
 
+/*	Read stash lst and write on line if != '\n'*/
 char	*ft_create_line(t_stash *stash)
 {
 	char	*line;
@@ -65,19 +69,19 @@ char	*ft_create_line(t_stash *stash)
 
 	i = 0;
 	j = 0;
-	line = malloc(sizeof(char) * (ft_count_lst(stash) + 2));
+	if (!stash)
+		return (NULL);
+	line = malloc(sizeof(char) * (ft_count_lst(stash) + 1));
 	while (stash)
 	{
 		i = 0;
-		while (stash->content[i])
-		{
-			if (stash->content[i] == '\n')
-			{
-				line[j] = '\n';
-				line[++j] = '\0';
-				return (line);
-			}
+		while (stash->content[i] && stash->content[i] != '\n')
 			line[j++] = stash->content[i++];
+		if (stash->content[i] == '\n')
+		{
+			line[j] = '\n';
+			line[++j] = '\0';
+			return (line);
 		}
 		stash = stash->next;
 	}
@@ -114,16 +118,22 @@ t_stash	**ft_stash(t_stash **stash)
 	return (stash);
 }
 
+/*	Main function, manage other function and result	*/
 char	*get_next_line(int fd)
 {
 	static t_stash	*stash = NULL;
 	char			*buffer;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
+	{
+		ft_lstclear(&stash);
 		return (NULL);
+	}
 	ft_read(fd, &stash);
+	if (stash == NULL)
+		return (NULL);
 	buffer = ft_create_line(stash);
-	if ((buffer == NULL || buffer[0] == '\0') && !ft_verif_newline(stash))
+	if ((buffer == NULL || buffer[0] == '\0'))
 	{
 		ft_lstclear(&stash);
 		free(buffer);

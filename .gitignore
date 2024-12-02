@@ -3,3 +3,5 @@ get_next_line_utils.o
 get_next_line.h.gch
 get_next_line.o
 a.out
+.vscode/settings.json
+.gitignore

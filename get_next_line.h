@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:43:48 by toto              #+#    #+#             */
-/*   Updated: 2024/11/28 21:41:37 by toto             ###   ########.fr       */
+/*   Updated: 2024/12/03 00:26:48 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <fcntl.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
+#  define BUFFER_SIZE 10
 # endif
 
 typedef struct s_stash
@@ -28,6 +28,7 @@ typedef struct s_stash
 	struct s_stash	*next;
 }				t_stash;
 
+int		ft_lstsize(t_stash *lst);
 //Main
 char	*get_next_line(int fd);
 t_stash	**ft_stash(t_stash **stash);
