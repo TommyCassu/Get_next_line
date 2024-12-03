@@ -6,7 +6,7 @@
 /*   By: toto <toto@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/12/03 00:31:20 by toto             ###   ########.fr       */
+/*   Updated: 2024/12/03 02:04:19 by toto             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,13 @@ void	ft_read(int fd, t_stash **stash)
 			return ;
 		}
 		buffer[b_read] = '\0';
-		node = ft_lstnew(buffer);
-		if (!node)
+		if (buffer[0] == '\0')
+		{
+			free(buffer);
+			ft_lstclear(stash);
 			return ;
+		}
+		node = ft_lstnew(buffer);
 		ft_lstadd_back(stash, node);
 	}
 }
@@ -130,7 +134,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	ft_read(fd, &stash);
-	if (stash == NULL)
+	if (!stash)
 		return (NULL);
 	buffer = ft_create_line(stash);
 	if ((buffer == NULL || buffer[0] == '\0'))
