@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tcassu <tcassu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 22:42:38 by toto              #+#    #+#             */
-/*   Updated: 2024/12/05 04:26:27 by tcassu           ###   ########.fr       */
+/*   Updated: 2024/12/05 04:30:07 by tcassu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 // ---------------- -------------------
 int	ft_verif_newline(t_stash *stash)
@@ -125,28 +125,27 @@ t_stash	**ft_stash(t_stash **stash)
 /*	Main function, manage other function and result	*/
 char	*get_next_line(int fd)
 {
-	static t_stash	*stash = NULL;
+	static t_stash	*stash[OPEN_MAX] = {NULL};
 	char			*buffer;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &buffer, 0) < 0)
+	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0
+		|| read(fd, &buffer, 0) < 0)
 	{
-		ft_lstclear(&stash);
+		if (fd >= 0 && fd < OPEN_MAX)
+			ft_lstclear(&stash[fd]);
 		return (NULL);
 	}
-	ft_read(fd, &stash);
-	if (!stash)
+	ft_read(fd, &stash[fd]);
+	if (!stash[fd])
 		return (NULL);
-	buffer = ft_create_line(stash);
+	buffer = ft_create_line(stash[fd]);
 	if ((buffer == NULL || buffer[0] == '\0'))
 	{
-		ft_lstclear(&stash);
+		ft_lstclear(&stash[fd]);
 		if (buffer[0] == '\0')
-		{
-			free(buffer);
-			buffer = NULL;
-		}
+			return (free(buffer), buffer = NULL);
 		return (NULL);
 	}
-	ft_stash(&stash);
+	ft_stash(&stash[fd]);
 	return (buffer);
 }
